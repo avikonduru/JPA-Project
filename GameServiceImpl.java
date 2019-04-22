@@ -46,27 +46,12 @@ public class GameServiceImpl implements GameService
 
     @Override
     public Game retrieve(Long gameID) throws DAOException, SQLException
-    {
-       	try 
-    		{
-    			em.getTransaction().begin();
-    			Game games = (Game)em.createQuery("from Game as g where g.id = :gameid")
-    					.setParameter("gameid", gameID)
-    					.getSingleResult();
-    			em.getTransaction().commit();
-    			
-    			if(games == null) {
-    				throw new DAOException("Game ID Not Found " + gameID);
-    			}
-    			
-    			return games;
-    				
-    		}
-    		catch (Exception ex) 
-    		{
-    			em.getTransaction().rollback();
-    			throw ex;
-    		}
+    {  	
+    	em.getTransaction().begin();
+    	Game game = (Game)em.find(Game.class, gameID);
+    	em.getTransaction().commit();
+    	
+    	return game;
     }
 
     @Override
@@ -132,7 +117,7 @@ public class GameServiceImpl implements GameService
     public List<Game> retrieveByReleaseDate(Date start, Date end) throws DAOException, SQLException
     {
 		em.getTransaction().begin();
-		List<Game> game = (List<Game>)em.createQuery("from Game as g where g.releaseDate between dStart and dEnd")
+		List<Game> game = (List<Game>)em.createQuery("from Game as g where g.releaseDate between :dStart and :dEnd")
 				.setParameter("dStart", start)
 				.setParameter("dEnd", end)
 				.getResultList();
